@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Dashboard | GramaSetu</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script>
+function checkAuth() {
+    if (!localStorage.getItem("token") || localStorage.getItem("role") !== "User") {
+        window.location.replace("Login.html");
+    }
+}
+checkAuth();
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted) checkAuth();
+});
+</script>
+
+<style>
+
+/* PAGE BACKGROUND */
+
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:#eef2ff;
+}
+
+/* NAVBAR */
+
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#0f766e;
+color:white;
+padding:15px 30px;
+}
+
+.navbar a{
+color:white;
+text-decoration:none;
+margin-left:20px;
+font-size:16px;
+}
+
+/* NOTIFICATION */
+
+.notification{
+position:relative;
+font-size:22px;
+margin-right:10px;
+cursor:pointer;
+}
+
+.notification-count{
+position:absolute;
+top:-6px;
+right:-8px;
+background:red;
+color:white;
+border-radius:50%;
+padding:2px 6px;
+font-size:12px;
+}
+
+/* DASHBOARD */
+
+.dashboard{
+padding:40px;
+text-align:center;
+}
+
+.dashboard h2{
+color:#1e293b;
+}
+
+.dashboard p{
+color:#475569;
+}
+
+/* USER ACTION BUTTONS */
+
+.user-actions{
+margin-top:40px;
+display:flex;
+flex-direction:column;
+gap:25px;
+align-items:center;
+}
+
+/* BUTTON STYLE */
+
+.action-btn{
+width:70%;
+padding:30px;
+font-size:26px;
+text-align:left;
+background:#f1f5f9;
+color:#1e293b;   /* Dark text */
+border:none;
+border-radius:10px;
+cursor:pointer;
+transition:0.3s;
+box-shadow:0 6px 15px rgba(0,0,0,0.12);
+}
+
+.action-btn:hover{
+background:#e2e8f0;
+transform:scale(1.02);
+}
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:15px;
+background:#0f766e;
+color:white;
+margin-top:50px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<header class="navbar">
+
+<h1 class="logo">GramaSetu</h1>
+
+<nav>
+
+<span class="notification">
+🔔
+<span class="notification-count" id="notifCount">0</span>
+</span>
+
+<a href="statistics.html">Show Statistics</a>
+<a href="User.html">Dashboard</a>
+<a href="Login.html">Logout</a>
+
+</nav>
+
+</header>
+
+<!-- DASHBOARD -->
+
+<section class="dashboard">
+
+<h2>Welcome User 👋</h2>
+<p>Raise and track your village complaints here.</p>
+
+<div class="user-actions">
+
+<button class="action-btn"
+onclick="location.href='complaint.html'">
+Register Complaint
+</button>
+
+<button class="action-btn"
+onclick="location.href='track.html'">
+Track Complaint Status
+</button>
+
+<button class="action-btn"
+onclick="location.href='feedback.html'">
+Feedback
+</button>
+
+</div>
+
+</section>
+
+<!-- FOOTER -->
+
+<footer>
+<p>© 2026 GramaSetu</p>
+</footer>
+
+<script>
+
+/* NOTIFICATION COUNT */
+
+let pending = 0;
+
+for(let i=0;i<localStorage.length;i++){
+
+let key = localStorage.key(i);
+
+try{
+
+let data = JSON.parse(localStorage.getItem(key));
+
+if(data && data.description && data.status !== "Completed"){
+pending++;
+}
+
+}catch(e){}
+
+}
+
+document.getElementById("notifCount").innerText = pending;
+
+</script>
+
+</body>
+</html>

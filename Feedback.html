@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feedback | GramaSetu</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+.container {
+    padding: 40px;
+    text-align: center;
+}
+
+.complaint-item {
+    background: #f1f1f1;
+    padding: 12px;
+    margin: 10px auto;
+    width: 60%;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.complaint-item:hover {
+    background: #e0e0e0;
+}
+
+.feedback-box {
+    margin-top: 30px;
+}
+
+textarea {
+    width: 60%;
+    height: 100px;
+    margin-top: 10px;
+}
+
+.stars span {
+    font-size: 30px;
+    cursor: pointer;
+    color: gray;
+}
+
+.stars span.selected {
+    color: gold;
+}
+
+button {
+    margin-top: 15px;
+    padding: 8px 15px;
+    cursor: pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<header class="navbar">
+    <h1 class="logo">GramaSetu</h1>
+    <nav>
+        <a href="User.html">Dashboard</a>
+        <a href="Login.html">Logout</a>
+    </nav>
+</header>
+
+<h2 style="text-align:center;">Give Feedback</h2>
+
+<div class="container">
+
+    <div id="complaintList"></div>
+
+    <div id="feedbackSection" class="feedback-box"></div>
+
+</div>
+
+<footer>
+    <p>© 2026 GramaSetu</p>
+</footer>
+
+<script>
+
+let selectedRating = 0;
+
+// ================= LOAD COMPLETED COMPLAINTS =================
+function loadComplaints() {
+
+    const complaintListDiv = document.getElementById("complaintList");
+    complaintListDiv.innerHTML = "";
+
+    let found = false;
+
+    for (let key in localStorage) {
+
+        try {
+            let data = JSON.parse(localStorage.getItem(key));
+
+            // Only show completed complaints
+            if (data && data.status === "Completed") {
+
+                found = true;
+
+                let div = document.createElement("div");
+                div.className = "complaint-item";
+                div.innerText = "Complaint ID: " + key;
+
+                div.onclick = function () {
+                    openFeedback(key);
+                };
+
+                complaintListDiv.appendChild(div);
+            }
+
+        } catch (e) { continue; }
+    }
+
+    if (!found) {
+        complaintListDiv.innerHTML =
+            "<p>No completed complaints available for feedback.</p>";
+    }
+}
+
+// ================= OPEN FEEDBACK FORM =================
+function openFeedback(id) {
+
+    const feedbackDiv = document.getElementById("feedbackSection");
+
+    feedbackDiv.innerHTML = `
+        <h3>Feedback for Complaint ID: ${id}</h3>
+
+        <div class="stars">
+            <span onclick="setRating(1)">★</span>
+            <span onclick="setRating(2)">★</span>
+            <span onclick="setRating(3)">★</span>
+            <span onclick="setRating(4)">★</span>
+            <span onclick="setRating(5)">★</span>
+        </div>
+
+        <p id="ratingValue"></p>
+
+        <textarea id="feedbackText"
+        placeholder="Write your feedback here..."></textarea><br>
+
+        <button onclick="submitFeedback('${id}')">
+            Submit Feedback
+        </button>
+    `;
+}
+
+// ================= SET RATING =================
+function setRating(value) {
+
+    selectedRating = value;
+
+    const stars = document.querySelectorAll(".stars span");
+
+    stars.forEach((star, index) => {
+        if (index < value) {
+            star.classList.add("selected");
+        } else {
+            star.classList.remove("selected");
+        }
+    });
+
+    document.getElementById("ratingValue").innerText =
+        "Selected Rating: " + value + " Star(s)";
+}
+
+// ================= SUBMIT FEEDBACK =================
+function submitFeedback(id) {
+
+    if (selectedRating === 0) {
+        alert("Please select rating.");
+        return;
+    }
+
+    const feedbackText =
+        document.getElementById("feedbackText").value;
+
+    if (!feedbackText) {
+        alert("Please write feedback.");
+        return;
+    }
+
+    let data = JSON.parse(localStorage.getItem(id));
+
+    data.feedback = feedbackText;
+    data.rating = selectedRating;
+
+    localStorage.setItem(id, JSON.stringify(data));
+
+    document.getElementById("feedbackSection").innerHTML =
+        "<h3>Successfully Submitted. Thank you for your cooperation! 🙏</h3>";
+
+}
+
+// Load complaints when page opens
+loadComplaints();
+
+</script>
+
+</body>
+</html>
+

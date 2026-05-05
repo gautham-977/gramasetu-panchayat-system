@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Complaint Submitted | GramaSetu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .thankyou-section {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #0f766e, #22c55e);
+            color: white;
+            padding: 40px;
+            min-height: 80vh;
+        }
+
+        .thankyou-box {
+            background: rgba(0,0,0,0.45);
+            padding: 50px;
+            border-radius: 15px;
+            max-width: 650px;
+            width: 100%;
+        }
+
+        .thankyou-box h1 {
+            font-size: 42px;
+            margin-bottom: 20px;
+        }
+
+        .thankyou-box p {
+            font-size: 20px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .date-box {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: #facc15;
+        }
+
+        .track-btn {
+            padding: 14px 30px;
+            background: white;
+            color: #0f766e;
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .track-btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+    <h1 class="logo">GramaSetu</h1>
+    <nav>
+        <a href="User.html">Dashboard</a>
+        <a href="Login.html">Logout</a>
+    </nav>
+</header>
+
+<!-- THANK YOU CONTENT -->
+<section class="thankyou-section">
+    <div class="thankyou-box">
+
+        <h1>Thank You 🙏</h1>
+
+        <p>
+            Your complaint has been successfully submitted.
+            Please find the expected resolution details below.
+        </p>
+
+        <div class="date-box">
+            Expected Rectification Date:<br>
+            <span id="rectifyDate"></span>
+        </div>
+
+        <button class="track-btn" onclick="location.href='track.html'">
+            Track Status
+        </button>
+
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <p>© 2026 GramaSetu</p>
+</footer>
+
+<script>
+
+    // Get the last registered complaint ID
+    const complaintId = localStorage.getItem("lastComplaintId");
+
+    if (complaintId) {
+
+        const data = JSON.parse(localStorage.getItem(complaintId));
+
+        document.getElementById("rectifyDate").innerHTML = `
+            <strong>${data.expectedDate}</strong><br>
+            (${data.priority} Priority)
+            <br><br>
+            Complaint ID: <strong>${complaintId}</strong>
+        `;
+
+    } else {
+
+        document.getElementById("rectifyDate").innerText =
+            "No complaint data found.";
+
+    }
+
+</script>
+
+</body>
+</html>

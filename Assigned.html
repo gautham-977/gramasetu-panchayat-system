@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assigned Work | GramaSetu</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+.container {
+    padding: 40px;
+    text-align: center;
+}
+
+.work-box {
+    border: 1px solid #ccc;
+    padding: 20px;
+    width: 70%;
+    margin: 20px auto;
+    border-radius: 8px;
+    text-align: left;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    margin-top: 10px;
+}
+
+button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<header class="navbar">
+    <h1 class="logo">GramaSetu</h1>
+    <nav>
+        <a href="Official.html">Dashboard</a>
+        <a href="Login.html">Logout</a>
+    </nav>
+</header>
+
+<section class="container">
+
+    <h2>Assigned Work</h2>
+
+    <div id="assignedContainer"></div>
+
+    <div id="message" style="margin-top:20px; font-weight:bold;"></div>
+
+</section>
+
+<footer>
+    <p>© 2026 GramaSetu</p>
+</footer>
+
+<script>
+
+let selectedComplaintId = null;
+
+// Load assigned complaint
+function loadAssignedWork() {
+
+    const container = document.getElementById("assignedContainer");
+    container.innerHTML = "";
+
+    for (let key in localStorage) {
+
+        if (localStorage.hasOwnProperty(key)) {
+
+            try {
+                let data = JSON.parse(localStorage.getItem(key));
+
+                if (data && data.official && data.official !== "Not Assigned") {
+
+                    selectedComplaintId = key;
+
+                    container.innerHTML = `
+                        <div class="work-box">
+                            <h3>Complaint ID: ${key}</h3>
+                            <p><b>Description:</b> ${data.description}</p>
+                            <p><b>Priority:</b> ${data.priority}</p>
+
+                            <h4>Status:</h4>
+
+                            <input type="radio" name="status" value="Completed"> Completed <br>
+                            <input type="radio" name="status" value="Partially Completed"> Partially Completed <br>
+                            <input type="radio" name="status" value="Not Completed"> Not Completed <br><br>
+
+                            <label><b>Description of Work Done:</b></label>
+                            <textarea id="workDescription"></textarea><br>
+
+                            <label><b>Upload Photo:</b></label><br>
+                            <input type="file" id="photoUpload"><br>
+
+                            <button onclick="submitWork()">Submit</button>
+                        </div>
+                    `;
+
+                    return; // show only one for now
+                }
+
+            } catch (e) {
+                continue;
+            }
+        }
+    }
+
+    container.innerHTML = "<p>No assigned work found.</p>";
+}
+
+function submitWork() {
+
+    if (!selectedComplaintId) {
+        alert("No complaint selected.");
+        return;
+    }
+
+    let selectedStatus =
+        document.querySelector('input[name="status"]:checked');
+
+    if (!selectedStatus) {
+        alert("Please select status.");
+        return;
+    }
+
+    let description = document.getElementById("workDescription").value;
+
+    let data = JSON.parse(localStorage.getItem(selectedComplaintId));
+
+    data.status = selectedStatus.value;
+    data.workDescription = description;
+
+    localStorage.setItem(selectedComplaintId, JSON.stringify(data));
+
+    document.getElementById("assignedContainer").innerHTML = "";
+    document.getElementById("message").innerHTML =
+        "Successfully Completed. Thank you for your cooperation.";
+
+}
+
+loadAssignedWork();
+
+</script>
+
+</body>
+</html>

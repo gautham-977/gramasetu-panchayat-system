@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard | GramaSetu</title>
+
+<script>
+function checkAuth() {
+    if (!localStorage.getItem("token") || localStorage.getItem("role") !== "Admin") {
+        window.location.replace("Login.html");
+    }
+}
+checkAuth();
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted) checkAuth();
+});
+</script>
+
+<style>
+
+body{
+font-family:'Segoe UI',sans-serif;
+margin:0;
+background:linear-gradient(135deg,#eef2ff,#f8fafc);
+}
+
+/* NAVBAR */
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#0f766e;
+color:white;
+padding:15px 40px;
+font-size:18px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+.navbar a{
+color:white;
+text-decoration:none;
+font-weight:500;
+}
+
+/* DASHBOARD */
+.dashboard{
+padding:40px 20px;
+text-align:center;
+}
+
+.dashboard h1{
+margin-bottom:30px;
+color:#0f172a;
+}
+
+/* GRID */
+.dashboard-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+gap:20px;
+max-width:1000px;
+margin:auto;
+}
+
+/* CARD */
+.card{
+background:white;
+padding:25px;
+border-radius:14px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+transition:0.3s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+}
+
+.card h3{
+margin-bottom:15px;
+}
+
+/* BUTTON */
+.card button{
+width:100%;
+padding:12px;
+background:linear-gradient(135deg,#2563eb,#3b82f6);
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.card button:hover{
+transform:scale(1.05);
+}
+
+/* RESULT CARD */
+.result-card{
+background:white;
+padding:20px;
+margin:20px auto;
+max-width:800px;
+border-radius:14px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+text-align:left;
+}
+
+/* STATUS BADGES */
+.pending{
+background:#fee2e2;
+color:#b91c1c;
+padding:5px 10px;
+border-radius:6px;
+}
+
+.resolved{
+background:#dcfce7;
+color:#166534;
+padding:5px 10px;
+border-radius:6px;
+}
+
+.assigned{
+background:#fef9c3;
+color:#854d0e;
+padding:5px 10px;
+border-radius:6px;
+}
+
+/* BUTTONS */
+.action-btn{
+padding:8px 14px;
+margin-top:10px;
+margin-right:10px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-size:14px;
+}
+
+.resolve-btn{
+background:#16a34a;
+color:white;
+}
+
+.assign-btn{
+background:#2563eb;
+color:white;
+}
+
+/* SELECT */
+select{
+margin-top:10px;
+padding:8px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="navbar">
+<h2>GramaSetu Admin</h2>
+<a href="Login.html">Logout</a>
+</header>
+
+<section class="dashboard">
+
+<h1>Admin Dashboard</h1>
+
+<div class="dashboard-grid">
+
+<div class="card">
+<h3>View Complaints</h3>
+<button onclick="viewComplaints()">Open</button>
+</div>
+
+<div class="card">
+<h3>Assign Work</h3>
+<button onclick="assignWorkView()">Open</button>
+</div>
+
+<div class="card">
+<h3>Track Status</h3>
+<button onclick="trackStatus()">Open</button>
+</div>
+
+<div class="card">
+<h3>Show Pending</h3>
+<button onclick="filterPending()">Open</button>
+</div>
+
+</div>
+
+<div id="adminContainer"></div>
+
+</section>
+
+<script>
+
+const BASE_URL = "https://gramasetu-panchayat-system.onrender.com/api/complaints";
+
+/* CHECK TOKEN */
+function getToken(){
+const token = localStorage.getItem("token");
+if(!token){
+alert("Login first");
+window.location.href="login.html";
+}
+return token;
+}
+
+/* AUTO LOAD ON PAGE OPEN */
+window.onload = () => {
+viewComplaints();
+}
+
+/* VIEW ALL */
+async function viewComplaints(){
+
+const container = document.getElementById("adminContainer");
+container.innerHTML = "Loading...";
+
+try{
+
+const res = await fetch(BASE_URL);
+
+if(!res.ok){
+throw new Error("Failed to fetch");
+}
+
+const data = await res.json();
+
+if(data.length === 0){
+container.innerHTML = "<p>No complaints found</p>";
+return;
+}
+
+container.innerHTML = "";
+
+data.forEach(c => {
+container.innerHTML += renderCard(c);
+});
+
+}catch(err){
+console.error(err);
+container.innerHTML = "Error loading complaints";
+}
+
+}
+
+/* CARD TEMPLATE */
+function renderCard(c){
+
+let statusClass = c.status === "Resolved" ? "resolved" :
+                  c.status === "Assigned" ? "assigned" : "pending";
+
+return `
+<div class="result-card">
+
+<h3>ID: ${c.complaintId}</h3>
+<hr style="margin:10px 0;">
+
+<p><b>User:</b> ${c.userId?.name || "Unknown"}</p>
+<p><b>Description:</b> ${c.description}</p>
+<p><b>Location:</b> ${c.location || "Not provided"}</p>
+<p><b>Expected Date:</b> ${c.expectedDate || "N/A"}</p>
+<p><b>Category:</b> ${c.category}</p>
+<p><b>Priority:</b> ${c.priority}</p>
+
+<p><b>Status:</b> 
+<span class="${statusClass}">${c.status || "Pending"}</span>
+</p>
+
+<p><b>Department:</b> ${c.assignedDepartment}</p>
+
+<select id="dept-${c.complaintId}">
+<option value="">Assign Department</option>
+<option value="Electricity">Electricity</option>
+<option value="Water">Water</option>
+<option value="PWD">PWD</option>
+</select>
+
+<br>
+
+<button class="action-btn assign-btn" onclick="assign('${c.complaintId}')">
+Assign
+</button>
+
+<button class="action-btn resolve-btn" onclick="markResolved('${c.complaintId}')">
+Resolve
+</button>
+
+</div>
+`;
+}
+
+/* ASSIGN */
+async function assign(id){
+
+const dept = document.getElementById("dept-"+id).value;
+
+if(!dept){
+alert("Select department");
+return;
+}
+
+try{
+
+await fetch(`https://gramasetu-panchayat-system.onrender.com/api/complaints/update/${id}`,{
+method:"PUT",
+headers:{
+"Content-Type":"application/json",
+"Authorization":"Bearer " + getToken()
+},
+body: JSON.stringify({
+status:"Assigned",
+assignedDepartment:dept
+})
+});
+
+alert("Assigned successfully");
+
+viewComplaints();
+
+}catch(err){
+alert("Error assigning");
+}
+
+}
+
+/* RESOLVE */
+async function markResolved(id){
+
+try{
+
+await fetch(`https://gramasetu-panchayat-system.onrender.com/api/complaints/update/${id}`,{
+method:"PUT",
+headers:{
+"Content-Type":"application/json",
+"Authorization":"Bearer " + getToken()
+},
+body: JSON.stringify({
+status:"Resolved"
+})
+});
+
+alert("Marked as resolved");
+
+viewComplaints();
+
+}catch(err){
+alert("Error updating status");
+}
+
+}
+
+/* FILTER PENDING */
+async function filterPending(){
+
+const res = await fetch(BASE_URL);
+const data = await res.json();
+
+const container = document.getElementById("adminContainer");
+container.innerHTML = "";
+
+const pending = data.filter(c => c.status === "Pending");
+
+if(pending.length === 0){
+container.innerHTML = "<p>No pending complaints</p>";
+return;
+}
+
+pending.forEach(c=>{
+container.innerHTML += renderCard(c);
+});
+
+}
+
+/* LOGOUT FIX */
+document.querySelector("a[href='Login.html']").addEventListener("click", () => {
+localStorage.removeItem("token");
+});
+
+</script>
+</body>
+</html>

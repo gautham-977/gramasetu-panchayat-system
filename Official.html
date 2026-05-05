@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Official Dashboard | GramaSetu</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script>
+function checkAuth() {
+    if (!localStorage.getItem("token") || localStorage.getItem("role") !== "Official") {
+        window.location.replace("Login.html");
+    }
+}
+checkAuth();
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted) checkAuth();
+});
+</script>
+
+<style>
+.dashboard {
+    padding: 40px;
+    text-align: center;
+}
+
+.work-btn {
+    padding: 15px 30px;
+    font-size: 18px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+    <h1 class="logo">GramaSetu</h1>
+    <nav>
+        <a href="Official.html">Dashboard</a>
+        <a href="Login.html">Logout</a>
+    </nav>
+</header>
+
+<!-- DASHBOARD -->
+<section class="dashboard">
+
+    <h2>Welcome Official 👷</h2>
+    <p>Manage assigned complaints here.</p>
+
+    <!-- Assigned Work Button -->
+    <button class="work-btn"
+        onclick="location.href='Assigned.html'">
+        Assigned Work
+    </button>
+
+</section>
+
+<footer>
+    <p>© 2026 GramaSetu</p>
+</footer>
+
+</body>
+</html>

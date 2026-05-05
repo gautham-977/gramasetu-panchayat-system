@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Complaint | GramaSetu</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .container {
+            padding: 50px 20px;
+            text-align: center;
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+        }
+        .track-box {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        .track-box input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: 0.3s;
+        }
+        .track-box input:focus {
+            border-color: #0f766e;
+            box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.2);
+        }
+        .track-box button {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .track-box button:hover {
+            background: #1d4ed8;
+            transform: scale(1.02);
+        }
+        #result {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 6px solid #0f766e;
+            text-align: left;
+            display: none;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+        #result h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #0f172a;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        #result p {
+            margin: 12px 0;
+            color: #334155;
+            font-size: 16px;
+        }
+        #result b {
+            color: #0f172a;
+        }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <h1 class="logo">GramaSetu</h1>
+    <nav>
+        <a href="User.html">Dashboard</a>
+        <a href="Login.html">Logout</a>
+    </nav>
+</header>
+
+<div class="container">
+    <h2 style="margin-bottom: 30px; color: #0f172a; font-size: 32px;">Track Complaint Status</h2>
+
+    <div class="track-box">
+        <input type="text" id="complaintId" placeholder="Enter Complaint ID (e.g. C12345)">
+        <button onclick="trackComplaint()">Track Status</button>
+    </div>
+
+    <div id="result"></div>
+</div>
+
+<footer>
+    <p>© 2026 GramaSetu</p>
+</footer>
+
+<script>
+function trackComplaint() {
+    let id = document.getElementById("complaintId").value.trim();
+    if (!id) {
+        alert("Please enter a Complaint ID.");
+        return;
+    }
+
+    let storedData = JSON.parse(localStorage.getItem(id));
+    let resultDiv = document.getElementById("result");
+
+    resultDiv.style.display = "block";
+
+    if(storedData) {
+        resultDiv.innerHTML = `
+            <h3>Complaint Details</h3>
+            <p><b>Description:</b> ${storedData.description}</p>
+            <p><b>Priority:</b> ${storedData.priority}</p>
+            <p><b>Status:</b> <span style="color: ${storedData.status === 'Completed' || storedData.status === 'Resolved' ? 'green' : (storedData.status === 'Pending' ? 'red' : '#b45309')}; font-weight: 600;">${storedData.status}</span></p>
+            <p><b>Assigned Official:</b> ${storedData.official || 'Not Assigned'}</p>
+            <p><b>Expected Date:</b> ${storedData.expectedDate || 'N/A'}</p>
+        `;
+    } else {
+        resultDiv.innerHTML = "<h3 style='color: red; border: none;'>Complaint Not Found!</h3><p>Please check your Complaint ID and try again.</p>";
+    }
+}
+</script>
+
+</body>
+</html>

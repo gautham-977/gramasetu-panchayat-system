@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | GramaSetu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <h1 class="logo">GramaSetu</h1>
+        <nav>
+            <a href="GramaSetu.html">Home</a>
+            <a href="#">Services</a>
+            <a href="Login.html">Login</a>
+            <a href="Register.html">Register</a>
+        </nav>
+    </header>
+
+    <section class="auth-section">
+        <div class="auth-card">
+            <h2>Create an Account</h2>
+            <p>Join GramaSetu and raise your voice digitally.</p>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="regName" placeholder="Enter your name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>District</label>
+                    <select id="district" onchange="loadPanchayats()" required>
+                        <option value="">-- Select District --</option>
+                        <option value="Kasaragod">Kasaragod</option>
+                        <option value="Kannur">Kannur</option>
+                        <option value="Wayanad">Wayanad</option>
+                        <option value="Kozhikode">Kozhikode</option>
+                        <option value="Malappuram">Malappuram</option>
+                        <option value="Palakkad">Palakkad</option>
+                        <option value="Thrissur">Thrissur</option>
+                        <option value="Ernakulam">Ernakulam</option>
+                        <option value="Idukki">Idukki</option>
+                        <option value="Kottayam">Kottayam</option>
+                        <option value="Alappuzha">Alappuzha</option>
+                        <option value="Pathanamthitta">Pathanamthitta</option>
+                        <option value="Kollam">Kollam</option>
+                        <option value="Thiruvananthapuram">Thiruvananthapuram</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Panchayat</label>
+                    <select id="panchayat" required>
+                        <option value="">-- Select Panchayat --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="regRole" required>
+                        <option value="">-- Select Role --</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Official">Official</option>
+                        <option value="User">User</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Create password" required>
+                </div>
+
+                <button type="submit" class="primary auth-btn">Register</button>
+
+                <p class="auth-link">
+                    Already have an account? <a href="Login.html">Login</a>
+                </p>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 GramaSetu | Mini Project</p>
+    </footer>
+
+    <script src="Script.js"></script>
+    <script>
+        document.getElementById("registerForm").addEventListener("submit", async function(event){
+            event.preventDefault();
+            
+            const name = document.getElementById("regName").value;
+            const role = document.getElementById("regRole").value;
+            const password = document.getElementById("regPassword").value;
+            
+            try {
+                const res = await fetch("https://gramasetu-panchayat-system.onrender.com/api/auth/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ name, password, role })
+                });
+                
+                const data = await res.json();
+                
+                if(res.ok){
+                    alert("Registration successful! You can now login.");
+                    window.location.href = "Login.html";
+                } else {
+                    alert(data.message || "Registration failed");
+                }
+            } catch (error) {
+                alert("Server error");
+            }
+        });
+    </script>
+</body>
+</html>

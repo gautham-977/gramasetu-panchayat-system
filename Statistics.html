@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Statistics | GramaSetu</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+.statistics-section {
+    padding: 40px;
+    text-align: center;
+}
+
+.chart-container {
+    width: 400px;
+    margin: 40px auto;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+    <h1 class="logo">GramaSetu</h1>
+    <nav>
+        <a href="User.html">Dashboard</a>
+        <a href="Login.html">Logout</a>
+    </nav>
+</header>
+
+<!-- STATISTICS CONTENT -->
+<section class="statistics-section">
+
+    <h2>Complaint Statistics</h2>
+
+    <div class="chart-container">
+        <canvas id="complaintChart"></canvas>
+    </div>
+
+</section>
+
+<footer>
+    <p>© 2026 GramaSetu</p>
+</footer>
+
+<script>
+
+// Count complaints
+let solved = 0;
+let pending = 0;
+let notSolved = 0;
+
+for (let key in localStorage) {
+
+    if (localStorage.hasOwnProperty(key)) {
+
+        try {
+            let data = JSON.parse(localStorage.getItem(key));
+
+            if (data && data.status) {
+
+                if (data.status.toLowerCase().includes("completed")) {
+                    solved++;
+                }
+                else if (data.status.toLowerCase().includes("assigned") ||
+                         data.status.toLowerCase().includes("in progress")) {
+                    pending++;
+                }
+                else {
+                    notSolved++;
+                }
+
+            }
+
+        } catch (e) {
+            continue;
+        }
+    }
+}
+
+// Create Pie Chart
+const ctx = document.getElementById('complaintChart');
+
+new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: [
+            'Total Solved',
+            'Pending',
+            'Not Solved'
+        ],
+        datasets: [{
+            data: [solved, pending, notSolved],
+            backgroundColor: [
+                'blue',
+                'green',
+                'red'
+            ]
+        }]
+    },
+    options: {
+        responsive: true
+    }
+});
+
+</script>
+
+</body>
+</html>

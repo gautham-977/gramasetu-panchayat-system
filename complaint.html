@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register Complaint | GramaSetu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+ .complaint-section {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #0f766e, #22c55e);
+    padding: 40px;
+}
+
+/* Glass Card */
+.complaint-box {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
+    transition: 0.3s;
+}
+
+.complaint-box:hover {
+    transform: translateY(-5px);
+}
+
+/* Title */
+.complaint-box h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #0f172a;
+}
+
+/* Inputs */
+.complaint-box input,
+.complaint-box textarea,
+.complaint-box select {
+    width: 100%;
+    padding: 13px 15px;
+    margin-bottom: 18px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+/* Focus Effect */
+.complaint-box input:focus,
+.complaint-box textarea:focus,
+.complaint-box select:focus {
+    border-color: #0f766e;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(15,118,110,0.2);
+}
+
+/* Button */
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #0f766e, #14b8a6);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 17px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.submit-btn:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #0d5c56, #0f766e);
+}
+
+/* Secondary Button */
+button[type="button"] {
+    width: 100%;
+    padding: 10px;
+    background: #f1f5f9;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    transition: 0.3s;
+}
+
+button[type="button"]:hover {
+    background: #12942e;
+}
+    </style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <h1 class="logo">GramaSetu</h1>
+    <nav>
+        <a href="User.html">Dashboard</a>
+        <a href="Login.html">Logout</a>
+    </nav>
+</header>
+
+<section class="complaint-section">
+    <div class="complaint-box">
+
+        <h2>Register Complaint</h2>
+
+        <input type="text" id="username" placeholder="Enter Your Name" required>
+
+        <textarea id="description" rows="4"
+            placeholder="Enter Complaint Description" required></textarea>
+            <!-- Category -->
+<select id="category" required>
+    <option value="">-- Select Category --</option>
+    <option value="Water">Water</option>
+    <option value="Electricity">Electricity</option>
+    <option value="Sanitation">Sanitation</option>
+    <option value="Road">Road</option>
+    <option value="Other">Other</option>
+</select>
+
+<!-- Location -->
+<input type="text" id="location" placeholder="Enter Location">
+
+<button type="button" onclick="getLocation()" style="margin-bottom:20px;">
+    Use Current Location
+</button>
+
+<!-- Photo Upload -->
+<input type="file" id="photo" accept="image/*">
+
+        <select id="priority" required>
+            <option value="">-- Select Priority --</option>
+            <option value="High">High (Emergency)</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+        </select>
+
+        <button class="submit-btn" onclick="submitComplaint()">
+            Submit Complaint
+        </button>
+
+    </div>
+</section>
+
+<footer>
+    <p>© 2026 GramaSetu</p>
+</footer>
+
+<script>
+
+function submitComplaint() {
+
+    let userName = document.getElementById("username").value.trim();
+    let descriptionValue = document.getElementById("description").value.trim();
+    let priorityValue = document.getElementById("priority").value;
+    let categoryValue = document.getElementById("category").value;
+let locationValue = document.getElementById("location").value;
+let photoFile = document.getElementById("photo").files[0];
+
+    if (userName === "" || descriptionValue === "" || priorityValue === "") {
+        alert("Please fill all fields!");
+        return;
+    }
+
+    // Calculate Expected Date
+    let today = new Date();
+
+    if (priorityValue === "High") {
+        today.setDate(today.getDate() + 1);
+    }
+    else if (priorityValue === "Medium") {
+        today.setDate(today.getDate() + 4);
+    }
+    else {
+        today.setDate(today.getDate() + 8);
+    }
+
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    let expectedDateValue = today.toLocaleDateString('en-IN', options);
+
+    // Generate Complaint ID
+    let complaintId = "C" + Date.now();
+
+    // Complaint Object
+    let complaintData = {
+        user: userName,
+        description: descriptionValue,
+        priority: priorityValue,
+        status: "Submitted",
+        official: "Not Assigned",
+        expectedDate: expectedDateValue
+    };
+
+    // Save complaint
+    localStorage.setItem(complaintId, JSON.stringify(complaintData));
+
+    // Save ID for thankyou page
+    localStorage.setItem("lastComplaintId", complaintId);
+
+    // Redirect
+    window.location.href = "thankyou.html";
+}
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            let lat = position.coords.latitude;
+            let lon = position.coords.longitude;
+            document.getElementById("location").value = lat + ", " + lon;
+        });
+    } else {
+        alert("Geolocation not supported");
+    }
+}
+
+</script>
+
+</body>
+</html>
+
+
