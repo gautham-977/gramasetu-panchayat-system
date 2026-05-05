@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login | GramaSetu</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+/* MAIN CONTAINER */
+
+.login-container{
+display:flex;
+height:100vh;
+}
+
+/* LEFT IMAGE SIDE */
+
+.login-left{
+flex:1;
+
+background:
+linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)),
+url("Village.png");
+
+background-size:cover;
+background-position:center;
+
+display:flex;
+justify-content:center;
+align-items:center;
+text-align:center;
+color:white;
+padding:40px;
+}
+
+.login-left-content h1{
+font-size:42px;
+line-height:1.3;
+margin-bottom:10px;
+}
+
+.login-left-content p{
+font-size:18px;
+opacity:0.9;
+}
+
+/* RIGHT LOGIN SIDE */
+
+.login-right{
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#f5f5f5;
+}
+
+/* LOGIN CARD */
+
+.auth-card{
+background:white;
+padding:40px;
+width:350px;
+border-radius:12px;
+box-shadow:0 8px 25px rgba(0,0,0,0.15);
+}
+
+/* LOGIN HEADING */
+
+.login-title{
+text-align:center;
+font-size:32px;
+margin-bottom:5px;
+}
+
+.login-sub{
+text-align:center;
+color:#777;
+margin-bottom:25px;
+}
+
+/* FORM */
+
+.form-group{
+margin-bottom:15px;
+}
+
+.form-group input,
+.form-group select{
+width:100%;
+padding:12px;
+border-radius:6px;
+border:1px solid #ddd;
+margin-top:5px;
+font-size:14px;
+}
+
+/* LOGIN BUTTON */
+
+.login-btn{
+width:100%;
+padding:12px;
+margin-top:20px;
+background:#2563eb;
+color:white;
+border:none;
+cursor:pointer;
+font-size:16px;
+border-radius:6px;
+transition:0.3s;
+}
+
+.login-btn:hover{
+background:#1e40af;
+transform:scale(1.03);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="login-container">
+
+<!-- LEFT SIDE -->
+
+<div class="login-left">
+
+<div class="login-left-content">
+
+<h1>Empowering Smart Village Governance</h1>
+
+<p>
+Register complaints, track progress and improve
+community services through GramaSetu.
+</p>
+
+</div>
+
+</div>
+
+<!-- RIGHT SIDE -->
+
+<div class="login-right">
+
+<div class="auth-card">
+
+<h1 class="login-title">Login</h1>
+<p class="login-sub">Access your dashboard</p>
+
+<form id="loginForm">
+
+<div class="form-group">
+<label>Name</label>
+<input type="text" id="name" placeholder="Enter your name" required>
+</div>
+
+<div class="form-group">
+<label>Role</label>
+<select id="role" required>
+<option value="">-- Select Role --</option>
+<option value="Admin">Admin</option>
+<option value="Official">Official</option>
+<option value="User">User</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Password</label>
+<input type="password" id="password" placeholder="Enter password" required>
+</div>
+
+<button type="submit" class="login-btn">Login</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+// Enforce logout on arriving at login page
+localStorage.removeItem("token");
+localStorage.removeItem("role");
+localStorage.removeItem("userId");
+
+document.getElementById("loginForm").addEventListener("submit", async function(event){
+
+event.preventDefault();
+
+const name = document.getElementById("name").value;
+const password = document.getElementById("password").value;
+
+try {
+
+const res = await fetch("https://gramasetu-panchayat-system.onrender.com/api/auth/login", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify({ name, password })
+});
+
+const data = await res.json();
+
+if(res.ok){
+
+// ✅ Save REAL token
+localStorage.setItem("token", data.token);
+localStorage.setItem("role", data.role);
+localStorage.setItem("userId", data.user.id);
+
+alert("Login successful");
+
+// Redirect
+if(data.role === "Admin"){
+window.location.href = "Admin.html";
+}
+else if(data.role === "User"){
+window.location.href = "User.html";
+}
+else{
+window.location.href = "Official.html";
+}
+
+}else{
+alert(data.message);
+}
+
+}catch(error){
+alert("Server error");
+}
+
+});
+</script>
+
+</body>
+</html>
